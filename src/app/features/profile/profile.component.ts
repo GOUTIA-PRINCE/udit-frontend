@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-profile',
@@ -38,7 +39,7 @@ export class ProfileComponent implements OnInit {
     }, { validators: this.passwordMatchValidator });
 
     if (user?.profilePicture) {
-      this.imagePreview = 'http://localhost:3000/' + user.profilePicture;
+      this.imagePreview = environment.baseUrl + user.profilePicture;
     }
   }
 
@@ -66,7 +67,7 @@ export class ProfileComponent implements OnInit {
           this.profileMessage = 'Profil mis à jour avec succès !';
           this.selectedFile = null;
           if (res.user?.profilePicture) {
-            this.imagePreview = 'http://localhost:3000/' + res.user.profilePicture;
+            this.imagePreview = environment.baseUrl + res.user.profilePicture;
           }
           setTimeout(() => this.profileMessage = '', 3000);
         },

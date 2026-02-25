@@ -5,6 +5,7 @@ import { ProductService } from '../../core/services/product.service';
 import { AdminService } from '../../core/services/admin.service';
 import { Product } from '../../core/models/product.model';
 import { AuthService } from '../../core/services/auth.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'app-admin',
@@ -30,6 +31,7 @@ export class AdminComponent implements OnInit {
     selectedFile: File | null = null;
     selectedFileName: string = '';
     imagePreview: string | null = null;
+    baseUrl = environment.baseUrl;
     categories: string[] = [];
     newCategory: string = '';
     settings = {

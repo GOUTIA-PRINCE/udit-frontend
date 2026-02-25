@@ -117,7 +117,7 @@
                     <tr *ngFor="let user of users">
                         <td>
                             <div class="user-avatar-small">
-                                <img [src]="'http://localhost:3000/' + user.profilePicture"
+                                <img [src]="baseUrl + user.profilePicture"
                                     (error)="$any($event.target).src='https://ui-avatars.com/api/?name=' + user.firstName"
                                     alt="Avatar">
                             </div>
