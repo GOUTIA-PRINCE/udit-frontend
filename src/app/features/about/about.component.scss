@@ -1,0 +1,79 @@
+.about-hero {
+    background-color: var(--secondary-color);
+    color: white;
+    text-align: center;
+    padding: 5rem 1rem;
+    margin-bottom: 4rem;
+
+    h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+    }
+}
+
+.content-section {
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    margin-bottom: 5rem;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+    }
+
+    .text-block {
+        flex: 1;
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: #666;
+            line-height: 1.8;
+        }
+    }
+
+    .image-block {
+        flex: 1;
+
+        img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+    }
+}
+
+.values-section {
+    background-color: #f9f9f9;
+    padding: 5rem 0;
+    text-align: center;
+
+    h2 {
+        font-size: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .values-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+
+        .value-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+
+            h3 {
+                color: var(--primary-color);
+                margin-bottom: 1rem;
+            }
+        }
+    }
+}

@@ -1,0 +1,41 @@
+<div class="product-detail-container" *ngIf="product">
+    <div class="breadcrumb">
+        <a routerLink="/catalog">Catalogue</a> / <span>{{ product.name }}</span>
+    </div>
+
+    <div class="product-grid">
+        <div class="product-image">
+            <img [src]="product.image" [alt]="product.name">
+        </div>
+
+        <div class="product-info">
+            <span class="category">{{ product.category }}</span>
+            <h1>{{ product.name }}</h1>
+            <p class="price">{{ product.price }} FCFA</p>
+
+            <div class="description-section">
+                <h3>Description</h3>
+                <p>{{ product.description }}</p>
+            </div>
+
+            <div class="features">
+                <div class="feature-item">
+                    <i class="fas fa-truck"></i>
+                    <span>Livraison gratuite</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Garantie 2 ans</span>
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-lg" (click)="orderOnWhatsApp()">
+                <i class="fab fa-whatsapp"></i> Commander sur WhatsApp
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="loading" *ngIf="!product">
+    <p>Chargement du produit...</p>
+</div>

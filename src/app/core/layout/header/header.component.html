@@ -1,0 +1,68 @@
+<header class="site-header">
+    <div class="container">
+        <div class="header-left">
+            <button class="mobile-menu-btn" (click)="toggleMobileMenu()" aria-label="Menu">
+                <i class="fas" [ngClass]="isMobileMenuOpen ? 'fa-times' : 'fa-bars'"></i>
+            </button>
+            <div class="logo">
+                <a routerLink="/"><img src="assets/logo-udit.png" alt="UDIT Logo" class="logo-img"></a>
+            </div>
+        </div>
+
+        <nav class="main-nav" [class.active]="isMobileMenuOpen">
+            <ul>
+                <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+                        (click)="closeMobileMenu()">Boutique</a>
+                </li>
+                <li><a routerLink="/about" routerLinkActive="active" (click)="closeMobileMenu()">À propos</a></li>
+                <li><a routerLink="/contact" routerLinkActive="active" (click)="closeMobileMenu()">Contact</a></li>
+                <li *ngIf="(authService.currentUser$ | async)?.role === 'admin'">
+                    <a routerLink="/admin" routerLinkActive="active" (click)="closeMobileMenu()">
+                        <i class="fas fa-user-shield"></i> Admin
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="user-actions">
+            <button class="icon-btn search-btn" aria-label="Rechercher" (click)="toggleSearch()">
+                <i class="fas" [ngClass]="isSearchOpen ? 'fa-times' : 'fa-search'"></i>
+            </button>
+            <div class="search-bar" *ngIf="isSearchOpen">
+                <input type="text" placeholder="Rechercher un produit..." [(ngModel)]="searchTerm"
+                    (keyup.enter)="onSearch()">
+                <button (click)="onSearch()"><i class="fas fa-search"></i></button>
+            </div>
+            <ng-container *ngIf="!authService.isLoggedIn(); else userProfile">
+                <a routerLink="/login" class="btn btn-primary-outline d-none-mobile">Connexion</a>
+                <a routerLink="/login" class="icon-btn d-block-mobile" aria-label="Connexion">
+                    <i class="fas fa-sign-in-alt"></i>
+                </a>
+            </ng-container>
+
+            <ng-template #userProfile>
+                <div class="user-profile-wrapper" *ngIf="authService.currentUser$ | async as user">
+                    <div class="profile-trigger" (click)="toggleDropdown(); $event.stopPropagation()">
+                        <img [src]="'http://localhost:3000/' + user.profilePicture" alt="Avatar" class="avatar"
+                            (error)="$any($event.target).src='https://ui-avatars.com/api/?name=' + user.firstName">
+                        <span class="user-name d-none-mobile">{{ user.firstName }}</span>
+                        <i class="fas fa-chevron-down d-none-mobile"></i>
+                    </div>
+
+                    <div class="dropdown-menu" *ngIf="isDropdownOpen">
+                        <div class="mobile-user-info d-block-mobile">
+                            <span class="name">{{ user.firstName }} {{ user.lastName }}</span>
+                            <span class="email">{{ user.email }}</span>
+                        </div>
+                        <a routerLink="/profile" class="dropdown-item" (click)="isDropdownOpen = false">
+                            <i class="fas fa-user"></i> Mon profil
+                        </a>
+                        <button (click)="logout()" class="dropdown-item logout">
+                            <i class="fas fa-sign-out-alt"></i> Se déconnecter
+                        </button>
+                    </div>
+                </div>
+            </ng-template>
+        </div>
+    </div>
+</header>

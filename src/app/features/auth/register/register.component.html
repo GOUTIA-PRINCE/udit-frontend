@@ -1,0 +1,74 @@
+<div class="auth-container">
+    <div class="auth-box">
+        <h2>Créer un compte</h2>
+        <p>Rejoignez-nous dès aujourd'hui et commencez votre shopping.</p>
+
+        <div class="alert alert-danger" *ngIf="errorMessage">
+            {{ errorMessage }}
+        </div>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+            <div class="profile-upload">
+                <div class="profile-preview" [class.no-image]="!imagePreview">
+                    <img *ngIf="imagePreview" [src]="imagePreview" alt="Aperçu">
+                    <i *ngIf="!imagePreview" class="fas fa-user"></i>
+                </div>
+                <label for="profilePicture" class="upload-label">
+                    <i class="fas fa-camera"></i> Photo de profil
+                    <input type="file" id="profilePicture" (change)="onFileSelected($event)" accept="image/*" hidden>
+                </label>
+            </div>
+            <div class="form-row">
+                <div class="form-group half">
+                    <label for="firstName">Prénom</label>
+                    <input type="text" id="firstName" formControlName="firstName"
+                        [class.error]="registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched">
+                    <span class="error-msg"
+                        *ngIf="registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched">Requis</span>
+                </div>
+                <div class="form-group half">
+                    <label for="lastName">Nom</label>
+                    <input type="text" id="lastName" formControlName="lastName"
+                        [class.error]="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched">
+                    <span class="error-msg"
+                        *ngIf="registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched">Requis</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" formControlName="email"
+                    [class.error]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">
+                <span class="error-msg"
+                    *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched">Email
+                    invalide</span>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" formControlName="password"
+                    [class.error]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">
+                <span class="error-msg"
+                    *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched">Min. 6
+                    caractères</span>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirmer le mot de passe</label>
+                <input type="password" id="confirmPassword" formControlName="confirmPassword"
+                    [class.error]="registerForm.hasError('mismatch') && registerForm.get('confirmPassword')?.touched">
+                <span class="error-msg"
+                    *ngIf="registerForm.hasError('mismatch') && registerForm.get('confirmPassword')?.touched">Les mots
+                    de passe ne correspondent pas</span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" [disabled]="loading || registerForm.invalid">
+                {{ loading ? 'Chargement...' : "S'inscrire" }}
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            <p>Déjà un compte ? <a routerLink="/login">Se connecter</a></p>
+        </div>
+    </div>
+</div>

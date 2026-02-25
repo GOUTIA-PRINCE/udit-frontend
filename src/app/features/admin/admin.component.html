@@ -1,0 +1,358 @@
+<div class="admin-dashboard">
+    <header class="admin-header">
+        <div class="header-content">
+            <h1>Tableau de bord Admin</h1>
+            <button class="btn btn-primary" (click)="openAddModal()" *ngIf="activeTab === 'products'">
+                <i class="fas fa-plus"></i> Nouveau Produit
+            </button>
+            <button class="btn btn-secondary" (click)="showCategoryModal = true" *ngIf="activeTab === 'products'"
+                style="margin-left: 10px;">
+                <i class="fas fa-tags"></i> Nouvelle Catégorie
+            </button>
+            <button class="btn btn-primary" (click)="openAddUserModal()" *ngIf="activeTab === 'users'">
+                <i class="fas fa-user-plus"></i> Nouvel Utilisateur
+            </button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card" (click)="switchTab('products')" [class.active]="activeTab === 'products'">
+                <div class="stat-icon"><i class="fas fa-box"></i></div>
+                <div class="stat-info">
+                    <span class="label">Total Produits</span>
+                    <span class="value">{{ products.length }}</span>
+                </div>
+            </div>
+            <div class="stat-card" (click)="switchTab('users')" [class.active]="activeTab === 'users'">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-info">
+                    <span class="label">Total Utilisateurs</span>
+                    <span class="value">{{ users.length }}</span>
+                </div>
+            </div>
+            <div class="stat-card" (click)="switchTab('messages')" [class.active]="activeTab === 'messages'">
+                <div class="stat-icon"><i class="fas fa-envelope"></i></div>
+                <div class="stat-info">
+                    <span class="label">Nouveaux Messages</span>
+                    <span class="value">{{ messages.length }}</span>
+                </div>
+            </div>
+            <div class="stat-card" (click)="switchTab('settings')" [class.active]="activeTab === 'settings'">
+                <div class="stat-icon"><i class="fas fa-cog"></i></div>
+                <div class="stat-info">
+                    <span class="label">Configuration</span>
+                    <span class="value">Paramètres</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="admin-tabs">
+        <button [class.active]="activeTab === 'products'" (click)="switchTab('products')">
+            <i class="fas fa-box"></i> Produits
+        </button>
+        <button [class.active]="activeTab === 'users'" (click)="switchTab('users')">
+            <i class="fas fa-users"></i> Gestion Utilisateurs
+        </button>
+        <button [class.active]="activeTab === 'messages'" (click)="switchTab('messages')">
+            <i class="fas fa-envelope"></i> Messages
+        </button>
+        <button [class.active]="activeTab === 'settings'" (click)="switchTab('settings')">
+            <i class="fas fa-cog"></i> Paramètres
+        </button>
+    </div>
+
+    <div class="content-card">
+        <!-- Products Table -->
+        <div class="table-responsive" *ngIf="activeTab === 'products'">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Produit</th>
+                        <th>Catégorie</th>
+                        <th>Prix</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let product of products">
+                        <td>
+                            <img [src]="product.image" [alt]="product.name" class="table-img">
+                        </td>
+                        <td>
+                            <div class="product-name-cell">
+                                <strong>{{ product.name }}</strong>
+                                <small>{{ product.description?.substring(0, 50) }}...</small>
+                            </div>
+                        </td>
+                        <td><span class="badge">{{ product.category }}</span></td>
+                        <td><strong>{{ product.price }} FCFA</strong></td>
+                        <td class="actions">
+                            <button class="btn-icon edit" (click)="openEditModal(product)" title="Modifier">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-icon delete" (click)="deleteProduct(product.id)" title="Supprimer">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Users Table -->
+        <div class="table-responsive" *ngIf="activeTab === 'users'">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Avatar</th>
+                        <th>Utilisateur</th>
+                        <th>Email</th>
+                        <th>Rôle</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let user of users">
+                        <td>
+                            <div class="user-avatar-small">
+                                <img [src]="'http://localhost:3000/' + user.profilePicture"
+                                    (error)="$any($event.target).src='https://ui-avatars.com/api/?name=' + user.firstName"
+                                    alt="Avatar">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="user-info-cell">
+                                <strong>{{ user.firstName }} {{ user.lastName }}</strong>
+                                <span class="user-id">ID: {{ user.id }}</span>
+                            </div>
+                        </td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            <span class="role-badge" [class.admin]="user.role === 'admin'">
+                                {{ user.role === 'admin' ? 'Administrateur' : 'Client' }}
+                            </span>
+                        </td>
+                        <td class="actions">
+                            <button class="btn-icon role-toggle" (click)="toggleUserRole(user)"
+                                [title]="user.role === 'admin' ? 'Rendre client' : 'Rendre admin'"
+                                [disabled]="user.id === authService.getUser()?.id">
+                                <i class="fas"
+                                    [ngClass]="user.role === 'admin' ? 'fa-user-minus' : 'fa-user-shield'"></i>
+                            </button>
+                            <button class="btn-icon delete" (click)="deleteUser(user.id)" title="Supprimer"
+                                [disabled]="user.id === authService.getUser()?.id">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Messages Table -->
+        <div class="table-responsive" *ngIf="activeTab === 'messages'">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Expéditeur</th>
+                        <th>Sujet</th>
+                        <th>Message</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let msg of messages">
+                        <td>{{ msg.date | date:'dd/MM/yyyy HH:mm' }}</td>
+                        <td>
+                            <div class="user-info-cell">
+                                <strong>{{ msg.name }}</strong>
+                                <span class="user-id">{{ msg.email }}</span>
+                            </div>
+                        </td>
+                        <td><strong>{{ msg.subject }}</strong></td>
+                        <td>
+                            <div class="message-preview" [title]="msg.message">
+                                {{ msg.message }}
+                            </div>
+                        </td>
+                        <td class="actions">
+                            <button class="btn-icon delete" (click)="deleteMessage(msg.id)" title="Supprimer">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr *ngIf="messages.length === 0">
+                        <td colspan="5" style="text-align: center; padding: 2rem;">
+                            Aucun message reçu pour le moment.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Settings Tab -->
+        <div class="settings-container" *ngIf="activeTab === 'settings'" style="padding: 2rem;">
+            <div style="max-width: 600px; margin: 0 auto; background: #f8f9fa; padding: 2rem; border-radius: 12px;">
+                <h3 style="margin-bottom: 2rem; color: var(--secondary-color);">
+                    <i class="fas fa-sliders-h" style="margin-right: 10px;"></i>
+                    Paramètres du catalogue
+                </h3>
+
+                <div class="form-group">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">
+                        Prix maximum du filtre (FCFA)
+                    </label>
+                    <p style="font-size: 0.85rem; color: #666; margin-bottom: 1rem;">
+                        Définit la limite supérieure du curseur de prix dans le catalogue pour les clients.
+                    </p>
+                    <input type="number" [(ngModel)]="settings.maxPriceLimit"
+                        style="width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem;">
+                </div>
+
+                <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
+                    <button class="btn btn-primary" (click)="saveSettings()">
+                        <i class="fas fa-save" style="margin-right: 8px;"></i>
+                        Enregistrer les modifications
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ajout Utilisateur -->
+    <div class="modal-overlay" *ngIf="showUserModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Ajouter un Nouvel Utilisateur</h2>
+                <button class="close-btn" (click)="showUserModal = false">&times;</button>
+            </div>
+            <form (ngSubmit)="saveUser()">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Prénom</label>
+                        <input type="text" [(ngModel)]="newUser.firstName" name="firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nom</label>
+                        <input type="text" [(ngModel)]="newUser.lastName" name="lastName" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" [(ngModel)]="newUser.email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Mot de passe</label>
+                    <input type="password" [(ngModel)]="newUser.password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label>Photo de profil (Optionnel)</label>
+                    <div class="file-input-container">
+                        <input type="file" (change)="onFileSelected($event)" accept="image/*" id="userImage"
+                            class="file-input">
+                        <label for="userImage" class="file-label">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            {{ selectedFileName || 'Choisir une photo...' }}
+                        </label>
+                    </div>
+                    <div class="image-preview" *ngIf="imagePreview">
+                        <img [src]="imagePreview" alt="Aperçu">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="showUserModal = false">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Créer le compte</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Ajout/Modification Produit (inchangé) -->
+    <div class="modal-overlay" *ngIf="showModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>{{ isEditing ? 'Modifier le Produit' : 'Ajouter un Produit' }}</h2>
+                <button class="close-btn" (click)="closeModal()">&times;</button>
+            </div>
+            <form (ngSubmit)="saveProduct()">
+                <div class="form-group">
+                    <label>Nom du produit</label>
+                    <input type="text" [(ngModel)]="currentProduct.name" name="name" required
+                        placeholder="Ex: Casque Audio">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Prix (FCFA)</label>
+                        <input type="number" [(ngModel)]="currentProduct.price" name="price" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Catégorie</label>
+                        <select [(ngModel)]="currentProduct.category" name="category">
+                            <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea [(ngModel)]="currentProduct.description" name="description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Image du produit</label>
+                    <div class="file-input-container">
+                        <input type="file" (change)="onFileSelected($event)" accept="image/*" id="productImage"
+                            class="file-input">
+                        <label for="productImage" class="file-label">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            {{ selectedFileName || 'Choisir une image...' }}
+                        </label>
+                    </div>
+                    <div class="image-preview" *ngIf="imagePreview">
+                        <img [src]="imagePreview" alt="Aperçu">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="closeModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Modal Ajout Catégorie -->
+    <div class="modal-overlay" *ngIf="showCategoryModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h2>Ajouter une Catégorie</h2>
+                <button class="close-btn" (click)="showCategoryModal = false">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 1.5rem;">
+                <div class="category-list"
+                    style="max-height: 200px; overflow-y: auto; margin-bottom: 1.5rem; border: 1px solid #eee; border-radius: 8px;">
+                    <div *ngFor="let cat of categories"
+                        style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-bottom: 1px solid #eee;">
+                        <span>{{ cat }}</span>
+                        <button class="btn-icon delete" (click)="deleteCategory(cat)" [disabled]="cat === 'autres'"
+                            title="Supprimer">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <form (ngSubmit)="addNewCategory()">
+                    <div class="form-group">
+                        <label>Nom de la nouvelle catégorie</label>
+                        <input type="text" [(ngModel)]="newCategory" name="categoryName" required
+                            placeholder="Ex: Réseau">
+                    </div>
+                    <div class="modal-footer" style="padding: 0; border-top: none; margin-top: 1rem;">
+                        <button type="button" class="btn btn-secondary"
+                            (click)="showCategoryModal = false">Fermer</button>
+                        <button type="submit" class="btn btn-primary">Ajouter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

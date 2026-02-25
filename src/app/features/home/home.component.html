@@ -1,0 +1,99 @@
+<section class="hero">
+    <div class="hero-content">
+        <h1>Découvrez l'Excellence <br><span>Tech & Lifestyle</span></h1>
+        <p>La meilleure sélection de produits pour votre quotidien.</p>
+        <div class="cta-group">
+            <button (click)="scrollToCatalog()" class="btn btn-primary">Voir la boutique</button>
+            <a routerLink="/about" class="btn btn-secondary">En savoir plus</a>
+        </div>
+    </div>
+</section>
+
+<section id="catalog-section" class="catalog-main">
+    <div class="container">
+        <div class="section-header">
+            <h2>Nos Produits</h2>
+            <div class="search-info" *ngIf="searchTerm">
+                Résultats pour : <strong>{{ searchTerm }}</strong>
+                <button class="btn-clear" (click)="searchTerm = ''; applyFilters()">×</button>
+            </div>
+        </div>
+
+        <div class="horizontal-filters">
+            <div class="category-scroll">
+                <button class="filter-chip" [class.active]="!hasActiveFilters()" (click)="clearCategoryFilters()">
+                    Tous
+                </button>
+                <button *ngFor="let cat of categories" class="filter-chip" [class.active]="selectedCategories[cat]"
+                    (click)="onCategoryChange(cat)">
+                    {{ cat }}
+                </button>
+            </div>
+
+            <div class="items-per-page-inline">
+                <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+                    <option [value]="6">6 par page</option>
+                    <option [value]="9">9 par page</option>
+                    <option [value]="12">12 par page</option>
+                    <option [value]="18">18 par page</option>
+                </select>
+            </div>
+
+            <div class="price-filter-inline">
+                <span>Prix max: {{ maxPrice }} FCFA</span>
+                <input type="range" min="0" [max]="maxPriceLimit" step="1000" [(ngModel)]="ngModelMaxPrice"
+                    (input)="onPriceInput($event)">
+            </div>
+        </div>
+
+        <div class="products-grid" *ngIf="paginatedProducts.length > 0">
+            <div class="product-card" *ngFor="let product of paginatedProducts">
+                <div class="product-image" [routerLink]="['/catalog', product.id]">
+                    <img [src]="product.image" [alt]="product.name">
+                </div>
+                <div class="product-info">
+                    <h3 [routerLink]="['/catalog', product.id]">{{ product.name }}</h3>
+                    <p class="price">{{ product.price }} FCFA</p>
+                    <button class="btn btn-primary" (click)="orderOnWhatsApp(product)">Commander</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="no-results" *ngIf="paginatedProducts.length === 0">
+            <p>Aucun produit ne correspond à votre recherche.</p>
+        </div>
+
+        <div class="pagination" *ngIf="totalPages > 1">
+            <button class="btn-pagination" [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">
+                <i class="fas fa-chevron-left"></i> Précédent
+            </button>
+            <div class="page-numbers">
+                <button *ngFor="let p of [].constructor(totalPages); let i = index" class="page-num"
+                    [class.active]="currentPage === i + 1" (click)="goToPage(i + 1)">
+                    {{ i + 1 }}
+                </button>
+            </div>
+            <button class="btn-pagination" [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">
+                Suivant <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="feature-card">
+        <i class="fas fa-truck"></i>
+        <h3>Livraison Rapide</h3>
+        <p>Partout en Afrique et dans le monde</p>
+    </div>
+    <div class="feature-card">
+        <i class="fab fa-whatsapp"></i>
+        <h3>Commande WhatsApp</h3>
+        <p>Commandez directement via WhatsApp</p>
+    </div>
+    <div class="feature-card">
+        <i class="fas fa-headset"></i>
+        <h3>Support 24/7</h3>
+        <p>Une équipe à votre écoute</p>
+    </div>
+</section>

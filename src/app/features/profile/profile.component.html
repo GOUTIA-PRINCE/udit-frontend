@@ -1,0 +1,86 @@
+<div class="profile-container">
+    <div class="profile-card">
+        <h1>Mon Profil</h1>
+
+        <div class="profile-sections">
+            <!-- Section Informations Personnelles -->
+            <section class="profile-section">
+                <h3>Informations Personnelles</h3>
+
+                <div class="profile-image-edit">
+                    <div class="avatar-large">
+                        <img [src]="imagePreview" *ngIf="imagePreview" alt="Avatar"
+                            (error)="$any($event.target).src='https://ui-avatars.com/api/?name=' + authService.getUser()?.firstName">
+                        <i class="fas fa-user" *ngIf="!imagePreview"></i>
+                    </div>
+                    <label for="profileUpload" class="btn-change-photo">
+                        <i class="fas fa-camera"></i> Changer la photo
+                        <input type="file" id="profileUpload" (change)="onFileSelected($event)" accept="image/*" hidden>
+                    </label>
+                </div>
+
+                <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label for="firstName">Prénom</label>
+                            <input type="text" id="firstName" formControlName="firstName">
+                        </div>
+                        <div class="form-group half">
+                            <label for="lastName">Nom</label>
+                            <input type="text" id="lastName" formControlName="lastName">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" formControlName="email">
+                    </div>
+
+                    <div class="alert" [class.alert-success]="!profileMessage.startsWith('Erreur')"
+                        *ngIf="profileMessage">
+                        {{ profileMessage }}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" [disabled]="loading || profileForm.invalid">
+                        {{ loading ? 'Enregistrement...' : 'Sauvegarder les modifications' }}
+                    </button>
+                </form>
+            </section>
+
+            <!-- Section Mot de Passe -->
+            <section class="profile-section">
+                <h3>Changer le mot de passe</h3>
+
+                <form [formGroup]="passwordForm" (ngSubmit)="updatePassword()">
+                    <div class="form-group">
+                        <label for="currentPassword">Mot de passe actuel</label>
+                        <input type="password" id="currentPassword" formControlName="currentPassword">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newPassword">Nouveau mot de passe</label>
+                        <input type="password" id="newPassword" formControlName="newPassword">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirmer le nouveau mot de passe</label>
+                        <input type="password" id="confirmPassword" formControlName="confirmPassword">
+                        <span class="error-msg"
+                            *ngIf="passwordForm.hasError('mismatch') && passwordForm.get('confirmPassword')?.touched">
+                            Les mots de passe ne correspondent pas
+                        </span>
+                    </div>
+
+                    <div class="alert" [class.alert-success]="!passwordMessage.startsWith('Erreur')"
+                        *ngIf="passwordMessage">
+                        {{ passwordMessage }}
+                    </div>
+
+                    <button type="submit" class="btn btn-secondary" [disabled]="loading || passwordForm.invalid">
+                        {{ loading ? 'Modification...' : 'Changer le mot de passe' }}
+                    </button>
+                </form>
+            </section>
+        </div>
+    </div>
+</div>
